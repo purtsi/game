@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 namespace Game
 {
-    public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+    public abstract class Singleton : MonoBehaviour
     {
-        public static T Instance { get; private set; }
+        public static Singleton Instance { get; private set; }
 
-        private void Awake()
+        virtual protected void Awake()
         {
             if (Instance != null && Instance != this)
             {
@@ -18,7 +19,7 @@ namespace Game
             else
             {
                 DontDestroyOnLoad(gameObject);
-                Instance = this as T;
+                Instance = this;
             }
         }
     }
