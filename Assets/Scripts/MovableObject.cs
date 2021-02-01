@@ -30,19 +30,9 @@ namespace Game
 
         private Rigidbody2D _rb;
 
-        private float _acceleration;
-        private float _velocity;
-        private float _turnTime;
-        private float _hitByVelocity;
-
         private bool _moving;
-        private bool _impactPending;
 
         private Vector2 _destination;
-        private Vector2 _currentDirection;
-        private Vector2 _startingPoint;
-
-        private MovableObject _hitByObject;
 
         // Start is called before the first frame update
         public virtual void Start()
@@ -79,7 +69,6 @@ namespace Game
 
         public void ChangeDirection(Vector2 direction)
         {
-            _turnTime = 0;
             //_startingPoint = _currentDirection;
             _destination = direction;
         }

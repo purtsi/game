@@ -26,11 +26,11 @@ public class PlaceParticlesEditor : EditorWindow
             //Get the mesh size and transform it to world space
             Vector2 meshSize = Matrix4x4.Scale(selection.localScale) * mesh.bounds.size;
 
-            Vector3[] vertices = mesh.vertices.Where(v => v.x <= 0).ToArray();
+            //Transform vertices relative to selection rotation
+            Vector3[] vertices = mesh.vertices.Select(v => selection.rotation * v).ToArray();
 
-            //int[,] positions = new int[(int)(selection.position.x * selection.localScale.x),(int)(selection.position.y * selection.localScale.y)];
-            //float width = vertices.Max<Vector3>(elem => elem.x) - vertices.Min<Vector3>(elem => elem.x) * selection.transform.localScale.x;
-            //float height = vertices.Max<Vector3>(elem => elem.y) - vertices.Min<Vector3>(elem => elem.y) * selection.transform.localScale.y;
+            //Include only "front" vertices
+            vertices = vertices.Where(v => (selection.rotation * v).z <= 0).ToArray();
 
             Vector2 scale = selection.lossyScale;
             Bounds bounds = particlePrefab.GetComponent<SpriteRenderer>().sprite.bounds;
@@ -41,13 +41,15 @@ public class PlaceParticlesEditor : EditorWindow
             {
                 for (int j = 0; j < particlesAmountY; j++)
                 {
-                    Vector2 position = new Vector2((i * bounds.size.x - (meshSize.x / 2) + bounds.extents.x) / scale.x, (j * bounds.size.y - (meshSize.y / 2) + bounds.extents.y) / scale.y);
+                    Vector3 position = new Vector3(
+                        (i * bounds.size.x - (meshSize.x / 2) + bounds.extents.x) / scale.x, 
+                        (j * bounds.size.y - (meshSize.y / 2) + bounds.extents.y) / scale.y);
 
                     if (vertices.Any(v => Mathf.Abs(v.x) > Mathf.Abs(position.x) && Mathf.Abs(v.y) > Mathf.Abs(position.y)))
                     {
                         GameObject particle = Instantiate(particlePrefab, Vector2.zero, Quaternion.identity) as GameObject;
                         particle.transform.SetParent(selection);
-                        particle.transform.localPosition = position;
+                        particle.transform.localPosition = selection.rotation * position;
                     }
                 }
             }
